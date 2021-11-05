@@ -2,6 +2,7 @@
 #include <SPI.h>
 #include "Ucglib.h"
 #include "qrcode.h"
+#include "SendMessage.h"
 
 #define  pin_backlight      27
 #define SCREEN_OFFSET_X     6
@@ -13,6 +14,7 @@
 Ucglib_ST7735_18x128x160_HWSPI ucg(/*cd=*/17, /*cs=*/5, /*reset=*/16);      //HW SPI, sclk=18, mosi=23
 // Create the QR code
 QRCode qrcode;
+SendMessage sMessage = SendMessage();
 
 void generateQRCode(String message)
 {
@@ -67,7 +69,19 @@ void lcd_on_off(bool on_off){
 }
 
 
-String boxMsg = "https://yongseung.pythonanywhere.com/mail/reg/?b=A002-001B&p=0001&m=123456&n=홍길동";
+void readBoxNo(){
+    sMessage.setBoxNo("A002-001B");
+}
+
+void makePassword(){
+    char buff[4];
+    sprintf(buff, "%04u", random((unsigned int)9999));    
+    sMessage.setPassword(String(buff));
+}
+
+// String httpp_addr = "https://yongseung.pythonanywhere.com/mail/reg/?";
+// String http_mmsg = "";
+// String boxMsg = "https://yongseung.pythonanywhere.com/mail/reg/?b=A002-001B&p=0001&m=123456&n=홍길동";
 
 void setup(void)
 {
@@ -80,11 +94,17 @@ void setup(void)
     ucg.clearScreen();
     ucg.setRotate180();
 
+    readBoxNo();
+    makePassword();
+    
+    sMessage.setName("홍길동");
+
     ucg.setFont(ucg_font_ncenR12_tr);
     ucg.setColor(1, 255, 0,0);
     ucg.setPrintPos(10,25);
-    ucg.print("@A002 - 002B ");
+    ucg.print("@ " + sMessage.getBoxNo());
 }
+
 
 void loop(void)
 {   
@@ -101,11 +121,17 @@ void loop(void)
     // 센서에 물건이 인식식되면(키가 눌러지면) QR 코드를 작성 후 표시
     //
     // 작성 후 LCD ON
-    generateQRCode(boxMsg);           //draw qrcode    
-    lcd_on_off(1);
+    makePassword();
+    sMessage.makeSendmessagOld();
+    sMessage.print();
+    generateQRCode(sMessage.getMessage());           //draw qrcode  
+
+    delay(20000);       //30sec delay  
+    lcd_on_off(0);
 
     //추가 누른 버튼이 없으면 30초 후 LCD OFF and deep sleep mode
     //
+    
     for (;;)
         ;
 }
