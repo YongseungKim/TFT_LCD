@@ -8,7 +8,11 @@
 #define SCREEN_OFFSET_X     6
 #define SCREEN_OFFSET_Y     -9
 #define QRCODE_BLOCK        3
-#define QRCODE_VERSION      5
+#define QRCODE_VERSION      5  
+// Version 4: 33x33, max: 114,  33x3 = 99 pixel
+// Version 5: 37x37, max: 154,  37*3 = 111 pixel
+// Version 6: 41x41, max: 195,  41*3 = 123 pixel
+
 
 // Ucglib_ST7735_18x128x160_SWSPI ucg(/*sclk=*/18, /*data=*/23, /*cd=*/17, /*cs=*/5, /*reset=*/16);  //SW SPI
 Ucglib_ST7735_18x128x160_HWSPI ucg(/*cd=*/17, /*cs=*/5, /*reset=*/16);      //HW SPI, sclk=18, mosi=23
